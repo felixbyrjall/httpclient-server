@@ -1,7 +1,6 @@
 package http;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +15,17 @@ public class HttpClient {
     public HttpClient(String host, int port, String url) {
         try (Socket socket = new Socket(host, port)) {
             String request = "GET " + url + " HTTP/1.1\r\n" +
-                    "Host: " + host + "\r\n\r\n";
+                    "Host: " + host + "\r\n" +
+                    "\r\n";
             socket.getOutputStream().write(request.getBytes());
 
-            String[] responseLine = readLine(socket.getInputStream()).split(" ");
+            //Read line one for status
+            String[] responseLine = readLine(socket).split(" ", 3);
             statusCode = Integer.parseInt(responseLine[1]);
             status = responseLine[2];
 
             String headerLine;
-            while (!(headerLine = readLine(socket.getInputStream())).isEmpty()) {
+            while(!(headerLine = readLine(socket)).isEmpty()) {
                 String[] headerParts = headerLine.split(" *: *", 2);
                 headers.put(headerParts[0], headerParts[1]);
             }
@@ -39,7 +40,20 @@ public class HttpClient {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } ;
+    }
+
+    private String readLine(Socket socket) throws IOException {
+        StringBuilder line = new StringBuilder();
+        int c;
+        while ((c = socket.getInputStream().read()) != '\r') {
+            line.append((char)c);
         }
+        c = socket.getInputStream().read(); // read next \n character
+        if (c != '\n') {
+            throw new IllegalStateException("Invalid http header - \\r not followed by \\n");
+        }
+        return line.toString();
     }
 
     private int getContentLength() {
@@ -52,16 +66,5 @@ public class HttpClient {
         System.out.println(body);
     }
 
-    private String readLine(InputStream inputStream) throws IOException {
-        StringBuilder line = new StringBuilder();
-        int c;
-        while ((c = inputStream.read()) != '\r') {
-            line.append((char) c);
-        }
-        c = inputStream.read();
-        if (c != '\n') {
-            throw new IllegalStateException("Invalid http header - \\r not followed by \\n");
-        }
-        return line.toString();
-    }
+
 }
