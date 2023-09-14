@@ -25,7 +25,7 @@ public class HttpServer extends Thread {
         }
     }
 
-    private class SocketThread extends Thread {
+    private static class SocketThread extends Thread {
 
         Socket clientSocket;
 
@@ -45,17 +45,11 @@ public class HttpServer extends Thread {
                         "Content-Length: " + contentLength + "\r\n" +
                         "\r\n" +
                         body).getBytes(StandardCharsets.UTF_8));
-                printStuff(message);
                 clientSocket.getOutputStream().close();
                 clientSocket.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private void printStuff(HttpMessage message) {
-        System.out.println(message.requestLine);
-        message.headers.forEach((key, value) -> System.out.printf("key: %s value: %s%n", key, value));
     }
 }

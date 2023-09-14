@@ -13,6 +13,7 @@ public class HttpMessage {
         this.headers = new HashMap<>();
         requestLine = readLine(clientSocket);
         fetchHeaders(clientSocket);
+        printStuff();
     }
 
     private void fetchHeaders(Socket clientSocket) throws IOException {
@@ -31,5 +32,10 @@ public class HttpMessage {
         }
         c = socket.getInputStream().read(); // read the next \n
         return line.toString();
+    }
+
+    private void printStuff() {
+        System.out.println(requestLine);
+        headers.forEach((key, value) -> System.out.printf("%s:%s%n", key, value));
     }
 }

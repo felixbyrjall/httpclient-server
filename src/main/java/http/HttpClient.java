@@ -62,7 +62,7 @@ public class HttpClient {
 
     private void printThings() {
         System.out.printf("status: %s, status code: %s \r\n", status, statusCode);
-        headers.forEach((key, value) -> System.out.printf("key: %s, value: %s%n", key, value));
+        headers.forEach((key, value) -> System.out.printf("%s:%s%n", key, value));
         System.out.println(body);
     }
 
