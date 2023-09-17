@@ -1,4 +1,4 @@
-package http;
+package http.server;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

@@ -36,7 +36,7 @@ public class HttpClient {
             }
             this.body = body.toString();
 
-            printThings();
+            //printThings();
 
         } catch (IOException e) {
             throw new RuntimeException(e);

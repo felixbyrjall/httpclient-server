@@ -1,5 +1,5 @@
 import http.HttpClient;
-import http.HttpServer;
+import http.server.HttpServer;
 import org.junit.jupiter.api.Test;
 
 public class HttpClientTest {
