@@ -5,11 +5,11 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpMessage {
+public class HttpRequest {
 
     public final String requestLine;
     public final Map<String, String> headers;
-    public HttpMessage(Socket clientSocket) throws IOException {
+    public HttpRequest(Socket clientSocket) throws IOException {
         this.headers = new HashMap<>();
         requestLine = readLine(clientSocket);
         fetchHeaders(clientSocket);

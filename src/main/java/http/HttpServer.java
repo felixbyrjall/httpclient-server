@@ -1,6 +1,7 @@
 package http;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -10,12 +11,12 @@ public class HttpServer extends Thread {
     private final int port;
 
     public HttpServer(int port) {
-        this.port=port;
+        this.port = port;
     }
 
     @Override
     public void run() {
-        try(ServerSocket serverSocket = new ServerSocket(port)) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 new SocketThread(clientSocket).start();
@@ -31,20 +32,25 @@ public class HttpServer extends Thread {
 
         public SocketThread(Socket clientSocket) {
             this.clientSocket = clientSocket;
-            System.out.println("New thread!");
         }
 
         @Override
         public void run() {
             try {
-                HttpMessage message = new HttpMessage(clientSocket);
-                var body = "<html><h1>Hello world!</h1></html>";
-                var contentLength = body.getBytes().length;
-                clientSocket.getOutputStream().write(("HTTP/1.1 200 OK\r\n" +
-                        "Content-Type: text/html\r\n" +
-                        "Content-Length: " + contentLength + "\r\n" +
-                        "\r\n" +
-                        body).getBytes(StandardCharsets.UTF_8));
+                HttpRequest request = new HttpRequest(clientSocket);
+                HttpResponse response = new HttpResponse(request);
+                OutputStream out = clientSocket.getOutputStream();
+
+                out.write(response.statusLine.getBytes(StandardCharsets.UTF_8));
+                response.headers.forEach((key, value) -> {
+                    try {
+                        out.write(String.format("%s:%s", key, value).getBytes(StandardCharsets.UTF_8));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                out.write(response.body.getBytes(StandardCharsets.UTF_8));
                 clientSocket.getOutputStream().close();
                 clientSocket.close();
             } catch (IOException e) {
