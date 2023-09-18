@@ -29,7 +29,10 @@ public class HttpRequestHandler extends Thread {
                 }
             });
             out.write("\r\n".getBytes(StandardCharsets.UTF_8));
-            out.write(response.body.getBytes(StandardCharsets.UTF_8));
+            if (response.body != null) {
+                out.write(response.body.getBytes(StandardCharsets.UTF_8));
+            }
+
             clientSocket.getOutputStream().close();
             clientSocket.close();
         } catch (IOException e) {
