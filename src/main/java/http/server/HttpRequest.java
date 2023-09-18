@@ -60,35 +60,13 @@ public class HttpRequest {
             } else {
                 line.append((char) c);
             }
-
         }
         return line.toString();
     }
-
 
     private void printStuff() {
         System.out.printf("%s %s %s%n", method, resource, httpVersion);
         headers.forEach((key, value) -> System.out.printf("%s:%s%n", key, value));
         System.out.println(body);
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public String getResource() {
-        return resource;
-    }
-
-    public String getHttpVersion() {
-        return httpVersion;
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public String getBody() {
-        return body;
     }
 }
